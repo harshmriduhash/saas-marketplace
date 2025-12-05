@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import Icon from "~/components/Icon";
 import Link from "next/link";
 import confetti from '~/utils/confetti'
+import { useCloudinaryUpload } from '~/utils/useCloudinaryUpload';
 
 import React, { FC, useEffect, useState } from 'react';
 import { NavBar } from "~/components/NavBar";
@@ -32,15 +33,17 @@ type SellItemForm = {
 const SellAnItem: NextPage = () => {
 	const createListing = api.listings.create.useMutation();
 	const router = useRouter();
+	const { uploadImage, uploading: imageUploading, uploadedUrl } = useCloudinaryUpload();
 
 	const [step, setStep] = useState(1)
 	const [recentlyCreatedProduct, setRecentlyCreatedProduct] = useState<boolean>(false)
 	const [timeUntilRedirect, setTimeUntilRedirect] = useState<number | 0>(5);
 	const [savingProduct, setSavingProduct] = useState<boolean>(false)
 	const [intervalRef, setIntervalRef] = useState<NodeJS.Timer | null>(null);
+	const [imageFile, setImageFile] = useState<File | null>(null);
 
 	const { register, handleSubmit } = useForm<SellItemForm>();
-	const onSubmit = (formData: SellItemForm) => {
+	const onSubmit = async (formData: SellItemForm) => {
 		setSavingProduct(true)
 		const interval = setInterval(() => {
 			setTimeUntilRedirect((prev) => prev - 1);
@@ -48,6 +51,11 @@ const SellAnItem: NextPage = () => {
 
 		setIntervalRef(interval)
 		setRecentlyCreatedProduct(true)
+
+		let imageUrl = uploadedUrl;
+		if (imageFile && !uploadedUrl) {
+			imageUrl = await uploadImage(imageFile);
+		}
 
 		createListing
 			.mutateAsync({
@@ -59,6 +67,7 @@ const SellAnItem: NextPage = () => {
 				tech_stack: formData.tech_stack,
 				competitors: formData.competitors,
 				assets: formData.assets,
+				imageUrl: imageUrl || undefined,
 			})
 			.then(() => {
 				setTimeout(() => {
@@ -212,16 +221,31 @@ const SellAnItem: NextPage = () => {
 									/>
 								</div>
 
-								<div className="flex flex-col mt-4">
-									<Input
-										elementType="textarea"
-										id="description"
-										labelName="Describe your app in a few words"
-										placeholder="Web app leveraging an online market place to sell latest AI SaaS products"
-										isRequired={true}
-									/>
-								</div>
+							<div className="flex flex-col mt-4">
+								<Input
+									elementType="textarea"
+									id="description"
+									labelName="Describe your app in a few words"
+									placeholder="Web app leveraging an online market place to sell latest AI SaaS products"
+									isRequired={true}
+								/>
 							</div>
+
+							<div className="flex flex-col mt-4">
+								<label>Upload Listing Image</label>
+								<input
+									type="file"
+									accept="image/*"
+									onChange={(e) => {
+										const file = e.target.files?.[0];
+										if (file) setImageFile(file);
+									}}
+									style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+								/>
+								{imageUploading && <p style={{ marginTop: '8px', color: '#666' }}>Uploading image...</p>}
+								{uploadedUrl && <p style={{ marginTop: '8px', color: 'green' }}>✓ Image uploaded</p>}
+							</div>
+						</div>
 						)}
 
 						{step === 2 && (

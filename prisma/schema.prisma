@@ -46,6 +46,23 @@ model Listing {
   isFeatured    Boolean   @default(false)
   featuredUntil DateTime?
   paid          Boolean   @default(false)
+  payments      Payment[]
+
+  // media
+  imageUrl String?
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  listingId     String
+  listing       Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  razorpayOrderId String
+  razorpayPaymentId String?
+  amount        Int      // in paise
+  currency      String   @default("INR")
+  status        String   @default("pending") // pending, captured, failed
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Message {

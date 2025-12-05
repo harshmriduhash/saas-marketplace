@@ -137,6 +137,7 @@ export const listingsRouter = createTRPCRouter({
 				assets: z.string(),
 				reason_selling: z.string(),
 				financing: z.string(),
+				imageUrl: z.string().optional(),
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
@@ -146,7 +147,8 @@ export const listingsRouter = createTRPCRouter({
 					userId: ctx.auth.userId,
 					tech_stack: input.tech_stack.split(','),
 					competitors: input.competitors.split(','),
-					assets: input.assets.split(',')
+					assets: input.assets.split(','),
+					imageUrl: input.imageUrl,
 				},
 			});
 			return listing;

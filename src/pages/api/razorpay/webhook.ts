@@ -40,7 +40,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // handle payment captured events
     if (event === 'payment.captured' || event === 'payment.authorized' || event === 'order.paid') {
-      const orderId = body?.payload?.payment?.entity?.order_id ?? body?.payload?.order?.entity?.id;
+      const paymentEntity = body?.payload?.payment?.entity;
+      const orderId = paymentEntity?.order_id ?? body?.payload?.order?.entity?.id;
+      const paymentId = paymentEntity?.id;
+      
       if (!orderId) {
         return res.status(200).send('No order id');
       }
@@ -65,12 +68,25 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const featuredUntil = new Date(Date.now() + featuredDays * 24 * 60 * 60 * 1000);
 
       try {
+        // Update listing as featured
         await prisma.listing.update({
           where: { id: listingId },
           data: { isFeatured: true, featuredUntil, paid: true },
         });
+
+        // Record payment in Payment model
+        await prisma.payment.create({
+          data: {
+            listingId,
+            razorpayOrderId: orderId,
+            razorpayPaymentId: paymentId || '',
+            amount: order.amount as number,
+            currency: 'INR',
+            status: 'captured',
+          },
+        });
       } catch (err) {
-        console.error('Could not update listing for featured payment', err);
+        console.error('Could not update listing or payment record', err);
       }
     }
 
