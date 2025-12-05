@@ -41,6 +41,11 @@ model Listing {
   // unique_views  BigInt
   // total_views   BigInt
   // offers_number BigInt
+
+  // monetization fields
+  isFeatured    Boolean   @default(false)
+  featuredUntil DateTime?
+  paid          Boolean   @default(false)
 }
 
 model Message {

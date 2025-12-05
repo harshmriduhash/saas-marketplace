@@ -6,6 +6,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { useForm } from "react-hook-form";
+import { useState } from 'react';
 import Icon from "~/components/Icon";
 import InvisibleNavbar from "~/components/InvisibleNavbar";
 import Link from "next/link";
@@ -26,6 +27,63 @@ const ListingView: NextPage = () => {
 	const user = useUser();
 
 	const sendMessage = api.listings.sendMessage.useMutation();
+
+	const [payLoading, setPayLoading] = useState(false);
+
+	const handleMakeFeatured = async () => {
+		if (!listingItem) return;
+		setPayLoading(true);
+
+		try {
+			const res = await fetch('/api/razorpay/create-order', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ listingId: listingItem.id, purchaseType: 'featured' }),
+			});
+
+			if (!res.ok) {
+				throw new Error('Could not create order');
+			}
+
+			const data = await res.json();
+			const { orderId, amount, key } = data;
+
+			const script = document.createElement('script');
+			script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+			script.async = true;
+			document.body.appendChild(script);
+
+			script.onload = () => {
+				const options: any = {
+					key: key,
+					order_id: orderId,
+					name: listingItem.name,
+					description: 'Featured listing',
+					theme: { color: '#111827' },
+					handler: function (response: any) {
+						alert('Payment successful. It may take a few seconds to reflect.');
+						setPayLoading(false);
+					},
+					onPaymentFailed: function () {
+						setPayLoading(false);
+					},
+				};
+
+				// @ts-ignore
+				const rzp = new (window as any).Razorpay(options);
+				rzp.open();
+			};
+
+			script.onerror = () => {
+				alert('Could not load Razorpay SDK');
+				setPayLoading(false);
+			};
+		} catch (err) {
+			console.error(err);
+			alert('Payment setup failed');
+			setPayLoading(false);
+		}
+	};
 
 	const listingItem = listing.data;
 
@@ -66,6 +124,9 @@ const ListingView: NextPage = () => {
 									<div className="icon-wrapper">
 										<Icon icon='notifications_on' />
 									</div>
+									<button className="btn-filled" onClick={handleMakeFeatured} style={{ marginLeft: 12 }}>
+										{payLoading ? 'Processing...' : 'Make Featured (₹499)'}
+									</button>
 								</div>
 							</div>
 
