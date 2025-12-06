@@ -3,6 +3,7 @@
 ## ✅ What's Been Completed
 
 ### 1. **Razorpay Payment Integration**
+
 - ✅ `razorpay` npm package added
 - ✅ Razorpay environment variables configured
 - ✅ Create order API endpoint (`/api/razorpay/create-order`)
@@ -11,6 +12,7 @@
 - ✅ Razorpay Checkout UI integration (client-side)
 
 ### 2. **Database & ORM**
+
 - ✅ Prisma schema updated with:
   - `Listing` model: `isFeatured`, `featuredUntil`, `paid`, `imageUrl`, `payments` relation
   - `Payment` model: tracks all transactions (orderId, paymentId, amount, status)
@@ -18,12 +20,14 @@
 - ✅ Ready for migration: `npx prisma db push` or `npx prisma migrate dev`
 
 ### 3. **Admin Dashboard**
+
 - ✅ Admin page at `/admin/transactions`
 - ✅ Shows recent payments (last 50 transactions)
 - ✅ Shows featured listings with expiry dates
 - ✅ tRPC admin router with `getPayments()` and `getFeaturedListings()` queries
 
 ### 4. **Image Uploads**
+
 - ✅ Cloudinary integration ready
 - ✅ Unsigned upload API endpoint (`/api/cloudinary/signature`)
 - ✅ `useCloudinaryUpload` React hook for file uploads
@@ -31,6 +35,7 @@
 - ✅ Images saved to `Listing.imageUrl`
 
 ### 5. **Documentation & Deployment**
+
 - ✅ Comprehensive `RAZORPAY_WEBHOOK_GUIDE.md` with:
   - Local setup (Razorpay + ngrok + testing)
   - Production deployment (Vercel)
@@ -45,21 +50,25 @@
 ## 🚀 Quick Start Commands
 
 ### 1. Install Dependencies
+
 ```bash
 npm install
 ```
 
 ### 2. Set Up Environment
+
 ```bash
 cp .env.example .env
 ```
 
 Then edit `.env` and add:
+
 - Clerk keys (from https://dashboard.clerk.com)
 - Razorpay test keys (from https://dashboard.razorpay.com/app/settings/api-keys)
 - Optional: Cloudinary credentials (from https://cloudinary.com/console)
 
 ### 3. Database Setup
+
 ```bash
 # Start local PostgreSQL (dev)
 ./run-docker.sh
@@ -71,6 +80,7 @@ npx prisma db push
 ```
 
 ### 4. Start Development Server
+
 ```bash
 npm run dev
 ```
@@ -78,6 +88,7 @@ npm run dev
 Visit `http://localhost:3000`
 
 ### 5. Test Payments Locally (with ngrok)
+
 ```bash
 # Terminal 1: Start dev server
 npm run dev
@@ -93,6 +104,7 @@ ngrok http 3000
 ```
 
 Then:
+
 1. Go to `http://localhost:3000/browse`
 2. Click "Make Featured (₹499)" on any listing
 3. Use test card: `4111 1111 1111 1111` (any future expiry + any 3-digit CVV)
@@ -103,6 +115,7 @@ Then:
 ## 📋 Final Checklist Before Launch
 
 ### Pre-Launch (Local Testing)
+
 - [ ] `npm install` runs without errors
 - [ ] `.env` is populated with Clerk + Razorpay test keys
 - [ ] `npx prisma db push` completes successfully
@@ -114,6 +127,7 @@ Then:
 - [ ] Can view admin dashboard at `/admin/transactions`
 
 ### Production Deployment
+
 - [ ] Create Vercel account and link GitHub repo
 - [ ] Set production environment variables in Vercel:
   - Production `DATABASE_URL` (Neon/Supabase/PlanetScale)
@@ -129,6 +143,7 @@ Then:
 - [ ] Monitor error logs in Vercel dashboard
 
 ### Revenue Activation
+
 - [ ] Featured listing fee is live (₹499 for 7 days)
 - [ ] Admin can view transactions at `/admin/transactions`
 - [ ] Payments are recorded in database (`Payment` table)
@@ -136,6 +151,7 @@ Then:
 - [ ] Monitor transaction volume and revenue
 
 ### Monitoring & Security
+
 - [ ] Add error logging (Sentry recommended)
 - [ ] Set up uptime monitoring
 - [ ] Review webhook logs weekly
@@ -147,6 +163,7 @@ Then:
 ## 💰 Revenue Scenarios (12-month)
 
 ### Conservative (15% MoM growth, starting 20 listings)
+
 ```
 M1: ₹9,980      M2: ₹11,477     M3: ₹12,974
 M4: ₹14,921     M5: ₹16,966     M6: ₹19,461
@@ -157,6 +174,7 @@ Year Total: ₹283,000
 ```
 
 ### Moderate (20% MoM growth, starting 100 listings)
+
 ```
 M1: ₹49,900     M2: ₹59,880     M3: ₹71,856
 M4: ₹86,327     M5: ₹103,293    M6: ₹123,652
@@ -167,6 +185,7 @@ Year Total: ₹1,974,000 (~₹165k/month avg)
 ```
 
 ### Aggressive (30% MoM growth, starting 300 listings)
+
 ```
 M1: ₹149,700    M2: ₹194,610    M3: ₹252,993
 M4: ₹328,841    M5: ₹427,643    M6: ₹555,886
@@ -176,13 +195,14 @@ M10: ₹1,588,317 M11: ₹2,064,862 M12: ₹2,679,630
 Year Total: ₹11,128,000 (~₹927k/month avg)
 ```
 
-*Note: Gross revenue before Razorpay fees (~2% + GST ≈ ₹10–15/txn), platform operating costs, taxes, and refunds.*
+_Note: Gross revenue before Razorpay fees (~2% + GST ≈ ₹10–15/txn), platform operating costs, taxes, and refunds._
 
 ---
 
 ## 📁 Key Files Added/Modified
 
 ### New Files
+
 - `src/pages/api/razorpay/create-order.ts` — Create Razorpay orders
 - `src/pages/api/razorpay/webhook.ts` — Webhook handler (signature verification)
 - `src/pages/api/cloudinary/signature.ts` — Image upload signature
@@ -193,6 +213,7 @@ Year Total: ₹11,128,000 (~₹927k/month avg)
 - `README.md` — Updated project documentation
 
 ### Modified Files
+
 - `prisma/schema.prisma` — Added `Payment` model + fields to `Listing`
 - `package.json` — Added `razorpay` + `cloudinary` dependencies
 - `.env.example` — Added Razorpay + Cloudinary variables
@@ -206,29 +227,34 @@ Year Total: ₹11,128,000 (~₹927k/month avg)
 ## 🔧 Next Steps (Phase 2)
 
 1. **Marketing & Growth**
+
    - Launch product hunt post
    - Reach out to AI SaaS community
    - Build landing page with testimonials
    - Run ads (Google, Twitter, LinkedIn)
 
 2. **Seller Onboarding**
+
    - Better form UX (progress bar, field hints)
    - Email verification
    - Seller profiles + reviews
    - KYC for sellers (compliance)
 
 3. **Buyer Features**
+
    - Advanced search + filters
    - Saved searches
    - Email alerts on new listings
    - Listing comparisons
 
 4. **Commission Model** (Phase 2+)
+
    - Add commission on successful sales
    - Seller payouts (Razorpay Payouts or equivalent)
    - Escrow system for marketplace trust
 
 5. **Analytics**
+
    - Listing analytics (views, clicks, CTR)
    - Admin dashboard with KPIs
    - Cohort analysis
@@ -285,6 +311,7 @@ docker-compose down
 **Status**: ✅ **MVP Ready for Launch**
 
 All core features implemented:
+
 - ✅ User authentication (Clerk)
 - ✅ Listing creation + browsing
 - ✅ Razorpay payments (Featured listings)
