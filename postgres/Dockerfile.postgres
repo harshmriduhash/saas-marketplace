@@ -11,3 +11,5 @@ ENV POSTGRES_DB=database
 
 # Expose the default PostgreSQL port (5432)
 EXPOSE 5432
+# The default command to run PostgreSQL is already defined in the base image
+# so we don't need to specify CMD or ENTRYPOINT here.
